@@ -1,0 +1,3 @@
+name = Custom Survey Module
+description = Builds and displayes the health survey; implements email sending; and overrides social link titles.
+core = 7.x

@@ -1,0 +1,617 @@
+<?php
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function custom_survey_module_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types'){
+    return 'plugins/content_types';
+  }
+}
+
+
+/**
+ * Implements hook_entity_presave().
+ *
+ *
+ */
+
+function custom_survey_module_entity_presave($entity, $type) {
+
+  if ($type == 'entityform' && $entity->type == 'survey') {
+
+    $age = $entity->field_year_born[LANGUAGE_NONE][0]['value'];
+    $gender = $entity->field_gender[LANGUAGE_NONE][0]['value'];
+    $weight = $entity->field_weight[LANGUAGE_NONE][0]['value'];
+    $height_feet = $entity->field_height_feet[LANGUAGE_NONE][0]['value'];
+    $height_inches = $entity->field_height_inches[LANGUAGE_NONE][0]['value'];
+    $fruits_veggies = $entity->field_fruits_veggies[LANGUAGE_NONE][0]['value'];
+    $water = $entity->field_water[LANGUAGE_NONE][0]['value'];
+
+    $vitamins = $entity->field_vitamins[LANGUAGE_NONE];
+    $vita = array ();
+    $exercise = $entity->field_exercise[LANGUAGE_NONE][0]['value'];
+    $exercise_type = $entity->field_exercise_type[LANGUAGE_NONE][0]['value'];
+    $discomfort = $entity->field_discomfort[LANGUAGE_NONE][0]['value'];
+    $history = $entity->field_history[LANGUAGE_NONE][0]['value'];
+    $injury = $entity->field_injury[LANGUAGE_NONE][0]['value'];
+    $pushups = $entity->field_pushups[LANGUAGE_NONE][0]['value'];
+    $bending = $entity->field_bending[LANGUAGE_NONE][0]['value'];
+    $steps = $entity->field_steps[LANGUAGE_NONE][0]['value'];
+
+    $date_form_created = $entity->field_date_form_created[LANGUAGE_NONE][0]['value'];
+    // $email = $entity->field_email[LANGUAGE_NONE][0]['value'];
+
+    $age = ($date_form_created - $age);
+    $score = 0;
+    $score = $age;
+    if ($age >= 40 && $age <= 49) {
+      $score += 1;
+    }
+    if ($age >= 50 && $age <= 59) {
+      $score += 2;
+    }
+    if ($age >= 60 && $age <= 100) {
+      $score += 3;
+    }
+
+    if ($fruits_veggies <= 4) {
+      $score += .5;
+    }
+    if ($fruits_veggies >= 5) {
+      $score -= .5;
+    }
+
+    if ($water <= 3) {
+      $score += .5;
+    }
+    if ($water >= 7) {
+      $score -= .5;
+    }
+
+    foreach ($vitamins as $vita) {
+      if ($vita['value'] == 9) {
+        $score += 2;
+      }
+    }
+    foreach ($vitamins as $vita) {
+      if ($vita['value'] == '1' || $vita['value'] == '2') {
+        $score -= 2;
+      }
+    }
+
+    if ($exercise == 0) {
+      $score += 2;
+    }
+    else {
+      if ($exercise <= 3) {
+        if ($exercise == 0) {
+          $score -= 2;
+        }
+        if ($exercise_type == 1) {
+          $score -= 2;
+        }
+        if ($exercise_type == 2) {
+          $score -= 2;
+        }
+        if ($exercise_type == 3) {
+          $score -= 2;
+        }
+        if ($exercise_type == 4) {
+          $score -= 2;
+        }
+        if ($exercise_type == 5) {
+          $score -= 2;
+        }
+        if ($exercise_type == 6) {
+          $score -= 2;
+        }
+        if ($exercise_type == 7) {
+          $score -= 1;
+        }
+        if ($exercise_type == 8) {
+          $score -= 2;
+        }
+        if ($exercise_type == 9) {
+          $score -= 1;
+        }
+        if ($exercise_type == 10) {
+          $score -= 1;
+        }
+        if ($exercise_type == 11) {
+          $score -= 1;
+        }
+      }
+      else {
+        if ($exercise_type == 0) {
+          $score -= 2;
+        }
+        if ($exercise_type == 1) {
+          $score -= 3;
+        }
+        if ($exercise_type == 2) {
+          $score -= 3;
+        }
+        if ($exercise_type == 3) {
+          $score -= 2;
+        }
+        if ($exercise_type == 4) {
+          $score -= 2;
+        }
+        if ($exercise_type == 5) {
+          $score -= 3;
+        }
+        if ($exercise_type == 6) {
+          $score -= 3;
+        }
+        if ($exercise_type == 7) {
+          $score -= 2;
+        }
+        if ($exercise_type == 8) {
+          $score -= 1;
+        }
+        if ($exercise_type == 9) {
+          $score -= 1;
+        }
+        if ($exercise_type == 10) {
+          $score -= 2;
+        }
+        if ($exercise_type == 11) {
+          $score -= 1;
+        }
+      }
+    }
+    if ($exercise_type == 12) {
+      $score += 2;
+    }
+
+    if ($discomfort >= 1 && $discomfort <= 2) {
+      $score -= 2;
+    }
+    if ($discomfort == 3) {
+      $score -= 1;
+    }
+    if ($discomfort >= 7 && $discomfort <= 8) {
+      $score += 1;
+    }
+    if ($discomfort >= 9 && $discomfort <= 10) {
+      $score += 2;
+    }
+
+    if ($history == 0) {
+      $score -= 3;
+    }
+    else {
+      $score += 3;
+    }
+
+    if ($injury == 0) {
+      $score += 3;
+    }
+
+    if ($bending == 0) {
+      $score += 1;
+    }
+    if ($bending == 1) {
+      $score += 1;
+    }
+    if ($bending == 2) {
+      $score += 0;
+    }
+    if ($bending == 3) {
+      $score -= 1;
+    }
+    if ($bending == 4) {
+      $score -= 1;
+    }
+
+    if ($steps <= 1) {
+      $score -= 2;
+    }
+    if ($steps >= 2 && $steps <= 3) {
+      $score -= 1;
+    }
+    if ($steps >= 7 && $steps <= 8) {
+      $score += 1;
+    }
+    if ($steps >= 9 && $steps <= 10) {
+      $score += 2;
+    }
+
+    if ($gender == 0) {
+      if ($pushups == 0) {
+        $score += 1;
+      }
+      if ($pushups == 1) {
+        $score += 0;
+      }
+      if ($pushups == 2 || $pushups == 3) {
+        $score -= 1;
+      }
+    }
+    else {
+      if ($pushups == 0) {
+        $score += 1;
+      }
+      if ($pushups == 1) {
+        $score += 0;
+      }
+      if ($pushups == 2 || $pushups == 3) {
+        $score -= 1;
+      }
+    }
+
+    $height = $height_feet * 12 + $height_inches;
+    $bmi = ($weight / $height) * 703;
+    if ($bmi >= 25 && $bmi <= 30) {
+      $score += 2;
+    }
+    if ($bmi > 30) {
+      $score += 3;
+    }
+
+    $status = '';
+    $score -= $age;
+    if ($score <= -6) {
+      $status = 'Excellent';
+    }
+    if ($score >= -5 && $score <= -2) {
+      $status = 'Good';
+    }
+    if ($score >= -1 && $score <= 1) {
+      $status = 'Average';
+    }
+    if ($score >= 2 && $score <= 9) {
+      $status = 'Below Average';
+    }
+    if ($score > 9) {
+      $status = 'Poor';
+    }
+
+
+    //Overall Score Calculations
+    if ($status == 'Below Average' || $status == 'Poor') {
+      $overall_score_calc = '
+  <h1 id="TTL_31b_awshucksJAA" class="graphic_TTL">Aw, Shucks.</h1>
+  <h3 id="SUB_31b_booJAA" class="graphic_TTL">It looks like you need to pay a little more attention to your joints. Luckily, there are simple steps you can take to improve the health and flexibility of your joints for the long haul!</h3>';
+      $overall_score_calc_email = '
+   <h1 style="font-size:18px;">Aw, Shucks.</h1>
+   It looks like you need to pay a little more attention to your joints. Luckily, there are simple steps you can take to improve the health and flexibility of your joints for the long haul!';
+    }
+    else {
+      $overall_score_calc = '
+  <h1 id="TTL_31b_hoorayJAA" class="graphic_TTL">Hooray!</h1>
+  <h3 id="SUB_31b_hoorayJAA" class="graphic_TTL">You are on your way to healthy and happy joints. Keep up the good work. There are simple steps you can take to maintain the health and flexibility of your joints for the long haul.</h3>';
+      $overall_score_calc_email = '
+  <h1 style="font-size:18px;">Hooray!</h1>
+   You are on your way to healthy and happy joints. Keep up the good work. There are simple steps you can take to maintain the health and flexibility of your joints for the long haul.';
+    }
+
+    // TODO::Remove inline styles from Overall Score Display and apply classes and css.
+    // Display Overall Score
+    $overall_score = $overall_score_calc . '<div class="jointage_results"><span style="font-size:12px; color:#FF6600">According to the Custom One Text<sup style="color:#FF6600">&reg;</sup> joint health assessment:</span><br>
+  Your joints are <span style="text-transform:uppercase; color:#FF6600; font-size:22px">' . $status . '</span> </div>
+  <br>
+<div style="font-size: 10pt; font-style: italic;line-height:120%;">The Custom One Text&reg; joint health assessment is for illustrative purposes only and is not meant to take the place of professional medical advice. If you have a pre-existing medical condition, we encourage you to seek the advice of your medical provider.</div><br>';
+
+    // Email Display Overall Score
+    $overall_score_email = $overall_score_calc_email . '<br><div style="color:#ff7200;">According to the Custom One Text&reg; joint health assessment:<br>
+  <span style="color:#ff7200;">Your joints are <span style="text-transform:uppercase;"><strong>' . $status . '</strong></span></div>
+  <br>
+  <p style="font-size: 10pt; font-style: italic; line-height: 120%;">The Custom One Text&reg; joint health assessment is for illustrative purposes only and is not meant to take the place of professional medical advice. If you have a pre-existing medical condition, we encourage you to seek the advice of your medical provider.</p>';
+
+// Basic Calculations
+    if ($bmi < 25) {
+      $basic_calc = 'Congrats! It looks like you re maintaining a healthy weight. Research has shown that with every single pound gained, a person puts four times, or four additional pounds, more stress on weight-bearing joints like knees, hips and back.';
+
+      $basic_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif"  class="yay">';
+
+    }
+    else {
+      $basic_calc = 'Research has shown that with every single pound gained, a person puts four times, or four additional pounds, more stress on weight-bearing joints like knees, hips and back.';
+
+      $basic_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+    };
+
+    // Display Basic Results
+    $basic = '
+<a class="panel selected" id="jaa_accordion_basics"></a>
+<div id="JAA_results_basic" class="scrollable items">
+  <div class="jaa_results_thin">' . $basic_calc_img . '</div>
+  <div class="jaa_results_wide">
+    <h4>Healthy Weight </h4>
+    <span class="JAA-text-results">' . $basic_calc . '</span>
+  </div>
+  <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: Stay on track by drinking two tall glasses of water before lifting the fork at each meal. The water acts as a portion-control device, limiting how much you eat.</span></div>
+  <br clear="both" />
+</div>';
+
+
+    // Fruits and Veggies, Water, and Vitamin Calculations for Nutrition Results
+    if ($fruits_veggies >= 5) {
+      $fruit_calc = "The Centers for Disease Control (CDC) recommends that everyone eat at least five servings of fruits or vegetables a day.  Congratulations, you are doing a great job. Fruits and vegetables that are rich in antioxidants (like leafy green vegetables, purple grapes, blueberries, cranberries, etc.) protect the body against free radicals. Antioxidants absorb free radicals to limit 'rusting' of the joints.";
+      $fruit_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+    }
+    else {
+      $fruit_calc = "Try to incorporate more fruits and vegetables into your diet. The Centers For Disease Control (CDC) recommends everyone eat at least five servings of fruits or vegetables a day. Fruits and vegetables that are rich in antioxidants (like leafy green vegetables, purple grapes, blueberries, cranberries, etc.) protect the body against free radicals. Antioxidants absorb free radicals to limit 'rusting' of the joints.";
+      $fruit_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+    }
+
+    $fruit_tip = "Choose deeply colored vegetables because they are the richest sources of antioxidants.";
+
+    if ($water >= 4) {
+      $water_calc = "You are doing a GREAT job of drinking water regularly. The brain, joints and all muscles work best when fully hydrated.";
+      $water_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+    }
+    else {
+      $water_calc = "Drink water more often than you think you should. The brain, joints and all muscles work best when fully hydrated.";
+      $water_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+    }
+
+    $water_tip = "Custom One Text&reg; products are an easy way to maintain hydration AND healthy joints. They deliver the supplements, vitamins, and hydration your body needs in a simple, once daily formula.";
+
+    foreach ($vitamins as $vita) {
+      if ($vita['value'] == 1 && $vita['value'] == 2 && ($vita['value'] != 0 || $vita['value'] != 4 || $vita['value'] != 5 || $vita['value'] != 6 || $vita['value'] != 7 || $vita['value'] != 8 || $vita['value'] != 9)) {//only glucosamine & chondroitin
+        $vitamins_calc = "Continue to take your daily dose of glucosamine and chondroitin. As you already know, research has shown that taking 1,500 mg of glucosamine with chondroitin daily can improve overall joint function, mobility and flexibility.* What you may not know is that certain vitamins and minerals like vitamin D, calcium and vitamin C are also important to keep your joints healthy!*";
+        $vitamins_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+      }
+      else {
+        if ($vita['value'] != 1 && $vita['value'] != 2 && $vita['value'] != 9) {//only vitamins (no G&C)
+          $vitamins_calc = "As you know, vitamin D, calcium and vitamin C are important for bone and joint health.* However, now it's time to incorporate glucosamine and chondroitin into your daily regimen.  Research has shown that taking 1,500 mg of glucosamine with chondroitin daily can improve overall joint function, mobility and flexibility.* Since there are no major food sources of glucosamine or chondroitin, you must supplement your diet.";
+          $vitamins_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+        }
+        else {
+          if ($vita['value'] == 9) {//no vitamins
+            $vitamins_calc = "You should begin incorporating a joint health supplement and  certain vitamins into your daily regimen. Research indicates that taking 1,500 mg of glucosamine combined with chondroitin daily can improve overall joint function, mobility and flexibility.* Since there are no major food sources of glucosamine or chondrotin, you must supplement your diet. In addition, vitamins and minerals such vitamin D, calcium and vitamin C are important for bone and Joint health.*";
+            $vitamins_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+          }
+          else {//Both Vitamins and G&C
+            $vitamins_calc = "Great job! Continue to take your daily dose of glucosamine, chondroitin and vitamins to keep your joints healthy! Research has shown that taking 1,500 mg of glucosamine with chondroitin daily can improve overall joint function, mobility and flexibility.* Since, there are no major food sources of glucosamine or chondroitin, you must supplement your diet. In addition, vitamins and minerals such vitamin D, calcium and vitamin C are important for bone and joint health.*";
+            $vitamins_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+          }
+        }
+      }
+      $vitamins_tip = "For an easy and delicious way to satisfy all your joint health needs, try Custom One Text&reg; supplement drinks available in Cran-Pomegranate and Blueberry Acai. Each 8 oz bottle contains a full day's supply of glucosamine combined with chondroitin, vitamin D, vitamin C and antioxidants so you can keep doing what you love to do.* Also available in a drink mix.";
+    }
+
+// Display Nutrition Results
+    $nutrition = '
+    <a class="panel" id="jaa_accordion_nutrition"></a>
+    <div id="JAA_results_nutrition" class="scrollable items">
+      <div class="jaa_results_thin">' . $fruit_calc_img . '</div>
+      <div class="jaa_results_wide">
+        <h4>Healthy Diet</h4>
+        <span class="JAA-text-results">' . $fruit_calc . '</span>
+      </div>
+      <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: ' . $fruit_tip . '</span></div>
+      <br clear="both" />
+
+      <div class="jaa_results_thin">' . $water_calc_img . '</div>
+      <div class="jaa_results_wide">
+        <h4>Hydration</h4>
+        <span class="JAA-text-results">' . $water_calc . '</span>
+      </div>
+      <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: ' . $water_tip . '</span></div>
+      <br clear="both" />
+
+      <div class="jaa_results_thin">' . $vitamins_calc_img . '</div>
+      <div class="jaa_results_wide">
+        <h4>Vitamins & Supplements</h4>
+        <span class="JAA-text-results">' . $vitamins_calc . '</span>
+      </div>
+      <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: ' . $vitamins_tip . '</span></div>
+      <br clear="both" />
+    </div>';
+
+
+    // Exercise Calculations for Exercise Results
+    if ($exercise >= 1) {
+      $exercise_calc = "Keep up the good work! A regular exercise regimen of 30-60 minutes five days per week will help you maintain a healthy weight. Low-impact activities like walking, swimming, biking, Pilates, yoga and martial arts are especially good for your joints. /n/n Consult your doctor before beginning any new exercise regimen.";
+      $exercise_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+    }
+    else {
+      $exercise_calc = 'Try to incorporate more exercise into your weekly routine. A regular exercise regimen of 30-60 minutes five days per week will help you maintain a healthy weight. Low-impact activities like walking, swimming, biking, Pilates, yoga and martial arts are especially good for your joints. /n/n Consult your doctor before beginning any new exercise regimen.';
+      $exercise_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+    }
+    $exercise_tip = "Cross training is very important, but it's hard to fit it all in. Even if you can’t work out like you used to, try to be active everyday, even if it's just a long walk. Variety can help to prevents injuries and overuse.";
+
+    // Display Exercise Results
+    $exercise_result = '
+<a class="panel" id="jaa_accordion_exercise"></a>
+<div id="JAA_results_exercise" class="scrollable items">
+  <div class="jaa_results_thin">' . $exercise_calc_img . '</div>
+  <div class="jaa_results_wide">
+    <h4>Exercise</h4>
+    <span class="JAA-text-results">' . $exercise_calc . '</span>
+  </div>
+  <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: ' . $exercise_tip . '</span></div>
+  <br clear="both" />
+</div>';
+
+    $joint_history = '
+<a class="panel" id="jaa_accordion_history"></a>
+<div id="JAA_results_history" class="scrollable items">
+  <div class="jaa_results_wide"><br><em>There are factors that affect joint health<br> that you can\'t control:</em><br><h4>Age</h4><p><span class="JAA-text-results">As we age, cartilage begins to thin due to the wear and tear of everyday activities.*  In addition, your body produces less glucosamine, a naturally occurring joint lubricant.  Both of these factors result in less cushioning and lubrication for your joints. Try to take 1,500 mg of glucosamine daily to lubricate your joints and incorporate exercise and strength training into your routine to maintain muscle mass.*</span></p></div>
+  <div class="jaa_results_wide genetics">
+    <div class="jaa_results_med">
+      <h4><strong>Genetics</stong></h4><p><span class="JAA-text-results">Genetics plays a large role in your joint health. Try to be aware of your family medical history so you can be proactive in dealing with issues that could affect your joint health. Always ask your doctor about what you can do now to ensure healthy joints later.</span></p>
+      <h4><strong>Prior injury or Joint Discomfort</strong></h4>	<p><span class="JAA-text-results">* Pay attention to your joints!  Pain, swelling, catching and locking are indications you need to be evaluated by a doctor.* </span></p>
+    </div>
+  </div>
+  <br clear="both" />
+</div>';
+
+    if ($pushups == '11-20' || $pushups == '20+') {
+      $strength_calc = "Excellent! Clearly, you have been doing some strength training. When your muscles are weak, your body puts undue pressure on your joints, increasing wear and tear. By strengthening muscles and ligaments around joints, you decrease stress on the joints, protecting them from damage. Resistance training also builds bone, which strengthens joints.*";
+      $strength_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+    }
+    else {
+      $strength_calc = "Try to incorporate more strength training into your daily regimen. When your muscles are weak, your body puts undue pressure on your joints, increasing wear and tear. By strengthening muscles and ligaments around joints, you decrease stress on the joints, protecting them from damage. Resistance training also builds bone, which strengthens joints* Consult your doctor before beginning any new exercise regimen.";
+      $strength_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+    }
+    $strength_tip = "Cross training can help keep your muscles strong. This in turn, keeps joints stable and allows you to keep doing what I love.";
+
+    if ($bending == '2' || $bending == '3' || $bending == '4') {
+      $bending_calc = "Great job! Good range of motion and maintaining joint flexibility is critical to protecting your joint health. Stretching, bending and moving your body lubricates your joints just so you can keep doing what you love to do.";
+      $bending_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_yay.gif" class="yay">';
+    }
+    else {
+      $bending_calc = "Try to incorporate more stretching into your daily routine. Good range of motion and maintaining joint flexibility is critical to protecting your joint health. Stretching, bending and moving your body lubricates your joints so you can keep doing what you love to do.";
+      $bending_calc_img = '<img src="/sites/custom_survey/themes/custom_survey/images/icon_nay.gif" class="yay">';
+    }
+    $bending_tip = "Taking stretch breaks throughout the day to stretch your muscles and help you get re-energized. <br><br>Consult your doctor before beginning any new exercise regimen.";
+
+
+    $fitness = '
+<a class="panel" id="jaa_accordion_fitness"></a>
+<div id="JAA_results_fitness" class="scrollable items">
+  <div class="jaa_results_thin">' . $strength_calc_img . '</div>
+  <div class="jaa_results_wide">
+    <h4>Strength</h4>
+    <span class="JAA-text-results">' . $strength_calc . '</span>
+  </div>
+  <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: ' . $strength_tip . '</span></div>
+  <br clear="both" />
+
+  <div class="jaa_results_thin">' . $bending_calc_img . '</div>
+  <div class="jaa_results_wide">
+    <h4>Flexibility</h4>
+    <span class="JAA-text-results">' . $bending_calc . '</span>
+  </div>
+  <div class="jaa_results_med"><span class="JAA-text-results"><strong>Tip</strong>: ' . $bending_tip . '</span></div>
+  <br clear="both" />
+</div>
+
+</div>
+<!-- end #jaa_accordion -->';
+
+
+    $entity->field_nutrition[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_nutrition[LANGUAGE_NONE][0]['value'] = $nutrition;
+    $entity->field_overall_score[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_overall_score[LANGUAGE_NONE][0]['value'] = $overall_score;
+    $entity->field_overall_score_email[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_overall_score_email[LANGUAGE_NONE][0]['value'] = $overall_score_email;
+    $entity->field_basic[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_basic[LANGUAGE_NONE][0]['value'] = $basic;
+    $entity->field_exercise_results[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_exercise_results[LANGUAGE_NONE][0]['value'] = $exercise_result;
+    $entity->field_joint_history[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_joint_history[LANGUAGE_NONE][0]['value'] = $joint_history;
+    $entity->field_fitness[LANGUAGE_NONE][0]['format'] = 'full_html';
+    $entity->field_fitness[LANGUAGE_NONE][0]['value'] = $fitness;
+
+//    dsm($entity);
+//    dsm($vitamins);
+//    dsm($type);
+  };
+
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function custom_survey_module_form_alter(&$form, &$form_state, $form_id) {
+//  dsm($form);
+//  dsm($form_state);
+//  dsm($form_id);
+//  dsm($form['field_weight']);
+  //entityform_type_load($form['#bundle']);
+
+  if($form_id == 'survey_entityform_edit_form'){
+    $form['#theme_wrappers'][] = 'entity_form_wrapper';
+  }
+};
+
+///**
+// * Modify the drupal mail system to send HTML emails.
+// * https://www.drupal.org/node/900794
+// */
+class custom_survey_moduleMailSystem implements MailSystemInterface {
+  /**
+   * Concatenate and wrap the e-mail body for plain-text mails.
+   *
+   * @param $message
+   *   A message array, as described in hook_mail_alter().
+   *
+   * @return
+   *   The formatted $message.
+   */
+  public function format(array $message) {
+    $message['headers']['Content-Type'] = 'text/html; charset=UTF-8;';
+    $message['body'] = implode("\n\n", $message['body']);
+  //  $message['body'] = drupal_wrap_mail($message['body']);
+    return $message;
+  }
+
+  /**
+   * Send an e-mail message, using Drupal variables and default settings.
+   *
+   * @see http://php.net/manual/en/function.mail.php
+   * @see drupal_mail()
+   *
+   * @param $message
+   *   A message array, as described in hook_mail_alter().
+   * @return
+   *   TRUE if the mail was successfully accepted, otherwise FALSE.
+   */
+  public function mail(array $message) {
+    $mimeheaders = array();
+    foreach ($message['headers'] as $name => $value) {
+      $mimeheaders[] = $name . ': ' . mime_header_encode($value);
+    }
+    $line_endings = variable_get('mail_line_endings', MAIL_LINE_ENDINGS);
+    return mail(
+      $message['to'],
+      mime_header_encode($message['subject']),
+      // Note: e-mail uses CRLF for line-endings. PHP's API requires LF
+      // on Unix and CRLF on Windows. Drupal automatically guesses the
+      // line-ending format appropriate for your system. If you need to
+      // override this, adjust $conf['mail_line_endings'] in settings.php.
+      preg_replace('@\r?\n@', $line_endings, $message['body']),
+      // For headers, PHP's API suggests that we use CRLF normally,
+      // but some MTAs incorrectly replace LF with CRLF. See #234403.
+      join("\n", $mimeheaders)
+    );
+  }
+}
+
+variable_set('mail_system', array('default-system' => 'custom_survey_moduleMailSystem'));
+
+
+/**
+ * Implements hook_social_media_links_platform_info_alter from Social Media Link Module.
+ *
+ * Change the platforms.
+ *
+ * @param array $platforms
+ *   A associative array with the defined platforms.
+ */
+function custom_survey_module_social_media_links_platform_info_alter(&$platforms) {
+  // Change the titles for Facebook and twitter.
+  $platforms['facebook']['title'] = t('Visit us on Facebook');
+  $platforms['twitter']['title'] = t('Follow us on Twitter');
+  $platforms['instagram']['title'] = t('Follow us on Instagram');
+
+}
+
+function custom_survey_module_theme(){
+  return array(
+    'entity_form_wrapper' => array(
+      'render element' => 'elements',
+      'template' => 'entity-form-wrapper',
+    )
+  );
+}
+
+function template_process_entity_form_wrapper(&$variables, $hook){
+  $variables['form'] = array(
+    '#markup' => $variables['elements']['#children'],
+  );
+}
+
+function template_preprocess_entity_form_wrapper(&$variables, $hook){
+  $entity =& $variables['elements']['#entity'];
+  $variables['classes_array'][] = drupal_html_class('entityform-' . $entity->type);
+}
+
